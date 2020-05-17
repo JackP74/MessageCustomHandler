@@ -17,6 +17,7 @@ namespace MessageCustomHandler
     public struct Result
     {
         public result MainResult { get; set; }
+
         public string CustomResult { get; set; }
 
         public override bool Equals(object obj)
@@ -114,6 +115,20 @@ namespace MessageCustomHandler
             this.Result = Result;
         }
 
+        public CustomButton(string Text, string Result)
+        {
+            this.Name = Text;
+            this.Text = Text;
+            this.Result = Result;
+        }
+
+        public CustomButton(string Text)
+        {
+            this.Name = Text;
+            this.Text = Text;
+            this.Result = Text;
+        }
+
     }
 
     public static class CMBox
@@ -126,6 +141,13 @@ namespace MessageCustomHandler
 
         }
 
+        static public Result Show(object message)
+        {
+
+            return new Message().New("Info", message.ToString(), Style.Info, GetButtons(Buttons.OK), string.Empty);
+
+        }
+
         static public Result Show(string title, string message)
         {
 
@@ -133,11 +155,25 @@ namespace MessageCustomHandler
 
         }
 
-        static public Result Show(string title, string message, Style style, Buttons buttons, CustomButton[] customButtons = null, string MoreInfo = "")
+        static public Result Show(string title, string message, Style style, Buttons buttons)
+        {
+
+            return new Message().New(title, message, style, GetButtons(buttons), string.Empty);
+
+        }
+
+        static public Result Show(string title, string message, Style style, Buttons buttons, string MoreInfo)
+        {
+
+            return new Message().New(title, message, style, GetButtons(buttons), MoreInfo);
+
+        }
+
+        static public Result Show(string title, string message, Style style, Buttons buttons, CustomButton[] customButtons, string MoreInfo)
         {
 
             List<CButton> finalButtons = new List<CButton>();
-
+            
             if (buttons == Buttons.Custom && customButtons != null && customButtons.Count() > 0)
             {
                 foreach (CustomButton newButton in customButtons)
@@ -149,6 +185,34 @@ namespace MessageCustomHandler
                         Text = newButton.Text,
                         MainResult = result.Custom,
                         CustomResult = newButton.Result
+                    });
+                }
+            }
+            else
+            {
+                finalButtons = GetButtons(buttons).ToList();
+            }
+
+            return new Message().New(title, message, style, finalButtons.ToArray(), MoreInfo);
+
+        }
+
+        static public Result Show(string title, string message, Style style, Buttons buttons, string[] customButtons, string MoreInfo)
+        {
+
+            List<CButton> finalButtons = new List<CButton>();
+
+            if (buttons == Buttons.Custom && customButtons != null && customButtons.Count() > 0)
+            {
+                foreach (string newButton in customButtons)
+                {
+                    finalButtons.Add(new CButton()
+                    {
+                        Name = newButton,
+                        AutoSize = true,
+                        Text = newButton,
+                        MainResult = result.Custom,
+                        CustomResult = newButton
                     });
                 }
             }
