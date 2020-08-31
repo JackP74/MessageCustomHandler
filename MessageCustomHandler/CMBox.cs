@@ -131,16 +131,27 @@ namespace MessageCustomHandler
 
     }
 
+    /// <summary>
+    /// Custom Message Handler, use .Show(...)
+    /// </summary>
     public static class CMBox
     {
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns>Result</returns>
         static public Result Show(string message)
         {
-
             return new Message().New("Info", message, Style.Info, GetButtons(Buttons.OK), string.Empty);
-
         }
 
+        /// <summary>
+        /// Here the title and style is "info", Buttons is "OK", message is .ToString()
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns>Result</returns>
         static public Result Show(object message)
         {
 
@@ -148,6 +159,12 @@ namespace MessageCustomHandler
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <returns>Result</returns>
         static public Result Show(string title, string message)
         {
 
@@ -155,6 +172,14 @@ namespace MessageCustomHandler
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="style"></param>
+        /// <param name="buttons"></param>
+        /// <returns>Result</returns>
         static public Result Show(string title, string message, Style style, Buttons buttons)
         {
 
@@ -162,6 +187,15 @@ namespace MessageCustomHandler
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="style"></param>
+        /// <param name="buttons"></param>
+        /// <param name="MoreInfo"></param>
+        /// <returns>Result</returns>
         static public Result Show(string title, string message, Style style, Buttons buttons, string MoreInfo)
         {
 
@@ -169,51 +203,53 @@ namespace MessageCustomHandler
 
         }
 
-        static public Result Show(string title, string message, Style style, Buttons buttons, CustomButton[] customButtons, string MoreInfo)
+        /// <summary>
+        /// Here customButtons can be string[] or CustomButton[]
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="style"></param>
+        /// <param name="buttons"></param>
+        /// <param name="customButtons"></param>
+        /// <param name="MoreInfo"></param>
+        /// <returns>Result</returns>
+        static public Result Show(string title, string message, Style style, Buttons buttons, object[] customButtons, string MoreInfo)
         {
-
             List<CButton> finalButtons = new List<CButton>();
-            
+
             if (buttons == Buttons.Custom && customButtons != null && customButtons.Count() > 0)
             {
-                foreach (CustomButton newButton in customButtons)
+                if (customButtons is CustomButton[])
                 {
-                    finalButtons.Add(new CButton()
+                    foreach (CustomButton newButton in customButtons)
                     {
-                        Name = newButton.Name,
-                        AutoSize = true,
-                        Text = newButton.Text,
-                        MainResult = result.Custom,
-                        CustomResult = newButton.Result
-                    });
+                        finalButtons.Add(new CButton()
+                        {
+                            Name = newButton.Name,
+                            AutoSize = true,
+                            Text = newButton.Text,
+                            MainResult = result.Custom,
+                            CustomResult = newButton.Result
+                        });
+                    }
                 }
-            }
-            else
-            {
-                finalButtons = GetButtons(buttons).ToList();
-            }
-
-            return new Message().New(title, message, style, finalButtons.ToArray(), MoreInfo);
-
-        }
-
-        static public Result Show(string title, string message, Style style, Buttons buttons, string[] customButtons, string MoreInfo)
-        {
-
-            List<CButton> finalButtons = new List<CButton>();
-
-            if (buttons == Buttons.Custom && customButtons != null && customButtons.Count() > 0)
-            {
-                foreach (string newButton in customButtons)
+                else if (customButtons is string[])
                 {
-                    finalButtons.Add(new CButton()
+                    foreach (string newButton in customButtons)
                     {
-                        Name = newButton,
-                        AutoSize = true,
-                        Text = newButton,
-                        MainResult = result.Custom,
-                        CustomResult = newButton
-                    });
+                        finalButtons.Add(new CButton()
+                        {
+                            Name = newButton,
+                            AutoSize = true,
+                            Text = newButton,
+                            MainResult = result.Custom,
+                            CustomResult = newButton
+                        });
+                    }
+                }
+                else
+                {
+                    throw new Exception("Invalid format, only string or custom button array");
                 }
             }
             else
